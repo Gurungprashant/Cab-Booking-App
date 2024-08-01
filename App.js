@@ -1,20 +1,48 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import CabsListScreen from './screens/CabsListScreen';
+import CabDetailScreen from './screens/CabDetailScreen';
+import MyCabScreen from './screens/MyCabScreen';
+import { CabProvider } from './context/CabContext';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-export default function App() {
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+function HomeStack() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen name="CabsList" component={CabsListScreen} />
+      <Stack.Screen name="CabDetail" component={CabDetailScreen} />
+    </Stack.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <CabProvider>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName;
+
+              if (route.name === 'Home') {
+                iconName = 'home';
+              } else if (route.name === 'My Cab') {
+                iconName = 'car-rental';
+              }
+
+              return <Icon name={iconName} size={size} color={color} />;
+            },
+          })}
+        >
+          <Tab.Screen name="Home" component={HomeStack} options={{headerShown: false}}/>
+          <Tab.Screen name="My Cab" component={MyCabScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </CabProvider>
+  );
+}
